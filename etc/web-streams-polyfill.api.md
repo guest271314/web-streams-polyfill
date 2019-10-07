@@ -11,25 +11,23 @@ export interface AbortSignal {
     removeEventListener(type: 'abort', listener: () => void): void;
 }
 
-// @public (undocumented)
+// @public
 export class ByteLengthQueuingStrategy implements QueuingStrategy<ArrayBufferView> {
     constructor({ highWaterMark }: {
         highWaterMark: number;
     });
     // (undocumented)
     readonly highWaterMark: number;
-    // (undocumented)
     size(chunk: ArrayBufferView): number;
 }
 
-// @public (undocumented)
+// @public
 export class CountQueuingStrategy implements QueuingStrategy<any> {
     constructor({ highWaterMark }: {
         highWaterMark: number;
     });
     // (undocumented)
     readonly highWaterMark: number;
-    // (undocumented)
     size(): 1;
 }
 
@@ -45,15 +43,14 @@ export interface PipeOptions {
     signal?: AbortSignal;
 }
 
-// @public (undocumented)
+// @public
 export interface QueuingStrategy<T = any> {
-    // (undocumented)
     highWaterMark?: number;
-    // Warning: (ae-forgotten-export) The symbol "QueuingStrategySizeCallback" needs to be exported by the entry point polyfill.d.ts
-    //
-    // (undocumented)
     size?: QueuingStrategySizeCallback<T>;
 }
+
+// @public
+export type QueuingStrategySizeCallback<T = any> = (chunk: T) => number;
 
 // Warning: (ae-forgotten-export) The symbol "ReadableByteStreamController" needs to be exported by the entry point polyfill.d.ts
 //
