@@ -108,6 +108,10 @@ export class ReadableStreamDefaultReader<R> {
     this._readRequests = new SimpleQueue();
   }
 
+  /**
+   * Returns a promise that will be fulfilled when the stream becomes closed,
+   * or rejected if the stream ever errors or the reader's lock is released before the stream finishes closing.
+   */
   get closed(): Promise<void> {
     if (!IsReadableStreamDefaultReader(this)) {
       return promiseRejectedWith(defaultReaderBrandCheckException('closed'));
@@ -116,6 +120,10 @@ export class ReadableStreamDefaultReader<R> {
     return this._closedPromise;
   }
 
+  /**
+   * If the reader is active, this behaves the same as the {@link ReadableStream.cancel | cancel} method
+   * for the associated stream.
+   */
   cancel(reason: any): Promise<void> {
     if (!IsReadableStreamDefaultReader(this)) {
       return promiseRejectedWith(defaultReaderBrandCheckException('cancel'));
@@ -128,6 +136,9 @@ export class ReadableStreamDefaultReader<R> {
     return ReadableStreamReaderGenericCancel(this, reason);
   }
 
+  /**
+   * Returns a promise that allows access to the next chunk from the stream's internal queue, if available.
+   */
   read(): Promise<ReadResult<R>> {
     if (!IsReadableStreamDefaultReader(this)) {
       return promiseRejectedWith(defaultReaderBrandCheckException('read'));
@@ -140,6 +151,15 @@ export class ReadableStreamDefaultReader<R> {
     return ReadableStreamDefaultReaderRead<R>(this);
   }
 
+  /**
+   * Releases the reader's lock on the corresponding stream. After the lock is released, the reader is no longer active.
+   * If the associated stream is errored when the lock is released, the reader will appear errored in the same way
+   * from now on; otherwise, the reader will appear closed.
+   *
+   * A reader's lock cannot be released while it still has a pending read request, i.e., if a promise returned by
+   * the reader's {@link ReadableStreamDefaultReader.read | read()} method has not yet been settled. Attempting to
+   * do so will throw a `TypeError` and leave the reader locked to the stream.
+   */
   releaseLock(): void {
     if (!IsReadableStreamDefaultReader(this)) {
       throw defaultReaderBrandCheckException('releaseLock');
