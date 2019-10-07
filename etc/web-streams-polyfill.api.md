@@ -31,15 +31,11 @@ export class CountQueuingStrategy implements QueuingStrategy<any> {
     size(): 1;
 }
 
-// @public (undocumented)
+// @public
 export interface PipeOptions {
-    // (undocumented)
     preventAbort?: boolean;
-    // (undocumented)
     preventCancel?: boolean;
-    // (undocumented)
     preventClose?: boolean;
-    // (undocumented)
     signal?: AbortSignal;
 }
 
@@ -57,9 +53,8 @@ export type QueuingStrategySizeCallback<T = any> = (chunk: T) => number;
 // @public (undocumented)
 export type ReadableByteStreamController = ReadableByteStreamController_2;
 
-// @public (undocumented)
+// @public
 export class ReadableStream<R = any> {
-    // (undocumented)
     [Symbol.asyncIterator]: (options?: {
         preventCancel?: boolean;
     }) => ReadableStreamAsyncIterator<R>;
@@ -68,15 +63,11 @@ export class ReadableStream<R = any> {
         size?: undefined;
     });
     constructor(underlyingSource?: UnderlyingSource<R>, strategy?: QueuingStrategy<R>);
-    // (undocumented)
     cancel(reason: any): Promise<void>;
-    // (undocumented)
     getIterator({ preventCancel }?: {
         preventCancel?: boolean;
     }): ReadableStreamAsyncIterator<R>;
     // Warning: (ae-forgotten-export) The symbol "ReadableStreamBYOBReader" needs to be exported by the entry point polyfill.d.ts
-    //
-    // (undocumented)
     getReader({ mode }: {
         mode: 'byob';
     }): ReadableStreamBYOBReader_2;
@@ -84,16 +75,12 @@ export class ReadableStream<R = any> {
     //
     // (undocumented)
     getReader(): ReadableStreamDefaultReader_2<R>;
-    // (undocumented)
     get locked(): boolean;
-    // (undocumented)
     pipeThrough<T>({ writable, readable }: {
         writable: WritableStream<R>;
         readable: ReadableStream<T>;
     }, { preventClose, preventAbort, preventCancel, signal }?: PipeOptions): ReadableStream<T>;
-    // (undocumented)
     pipeTo(dest: WritableStream<R>, { preventClose, preventAbort, preventCancel, signal }?: PipeOptions): Promise<void>;
-    // (undocumented)
     tee(): [ReadableStream<R>, ReadableStream<R>];
 }
 

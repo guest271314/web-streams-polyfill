@@ -61,15 +61,40 @@ import { AbortSignal, isAbortSignal } from './abort-signal';
 
 export type ReadableByteStream = ReadableStream<Uint8Array>;
 
+/**
+ * Options for {@link ReadableStream.pipeTo | piping} a stream.
+ *
+ * @public
+ */
 export interface PipeOptions {
+  /**
+   * If set to true, {@link ReadableStream.pipeTo} will not abort the writable stream if the readable stream errors.
+   */
   preventAbort?: boolean;
+  /**
+   * If set to true, {@link ReadableStream.pipeTo} will not cancel the readable stream if the writable stream closes
+   * or errors.
+   */
   preventCancel?: boolean;
+  /**
+   * If set to true, {@link ReadableStream.pipeTo} will not close the writable stream if the readable stream closes.
+   */
   preventClose?: boolean;
+  /**
+   * Can be set to an {@link AbortSignal} to allow aborting an ongoing pipe operation via the corresponding
+   * `AbortController`. In this case, the source readable stream will be canceled, and the destination writable stream
+   * aborted, unless the respective options `preventCancel` or `preventAbort` are set.
+   */
   signal?: AbortSignal;
 }
 
 type ReadableStreamState = 'readable' | 'closed' | 'errored';
 
+/**
+ * A readable stream represents a source of data, from which you can read.
+ *
+ * @public
+ */
 export class ReadableStream<R = any> {
   /** @internal */
   _state!: ReadableStreamState;
@@ -122,6 +147,9 @@ export class ReadableStream<R = any> {
     }
   }
 
+  /**
+   * Whether or not the readable stream is locked to a {@link ReadableStreamDefaultReader | reader}.
+   */
   get locked(): boolean {
     if (IsReadableStream(this) === false) {
       throw streamBrandCheckException('locked');
@@ -130,6 +158,12 @@ export class ReadableStream<R = any> {
     return IsReadableStreamLocked(this);
   }
 
+  /**
+   * Cancels the stream, signaling a loss of interest in the stream by a consumer.
+   *
+   * The supplied `reason` argument will be given to the underlying source's {@link UnderlyingSource.cancel | cancel()}
+   * method, which might or might not use it.
+   */
   cancel(reason: any): Promise<void> {
     if (IsReadableStream(this) === false) {
       return promiseRejectedWith(streamBrandCheckException('cancel'));
@@ -142,6 +176,24 @@ export class ReadableStream<R = any> {
     return ReadableStreamCancel(this, reason);
   }
 
+  /**
+   * Creates a reader of the type specified by the `mode` option and locks the stream to the new reader.
+   * While the stream is locked, no other reader can be acquired until this one is released.
+   *
+   * This functionality is especially useful for creating abstractions that desire the ability to consume a stream
+   * in its entirety. By getting a reader for the stream, you can ensure nobody else can interleave reads with yours
+   * or cancel the stream, which would interfere with your abstraction.
+   *
+   * When `mode` is `undefined`, the method creates a {@link ReadableStreamDefaultReader | default reader}.
+   * The reader provides the ability to directly read individual chunks from the stream via the reader's
+   * {@link ReadableStreamDefaultReader.read | read()} method.
+   *
+   * When `mode` is `"byob"`, the method creates a {@link ReadableStreamBYOBReader | BYOB reader}.
+   * This feature only works on readable byte streams, i.e. streams which were constructed specifically with
+   * the ability to handle "bring your own buffer" reading. The reader provides the ability to directly read
+   * individual chunks from the stream via the reader's {@link ReadableStreamBYOBReader.read | read()} method,
+   * into developer-supplied buffers, allowing more precise control over allocation.
+   */
   getReader({ mode }: { mode: 'byob' }): ReadableStreamBYOBReader;
   getReader(): ReadableStreamDefaultReader<R>;
   getReader({ mode }: { mode?: 'byob' } = {}): ReadableStreamDefaultReader<R> | ReadableStreamBYOBReader {
@@ -162,6 +214,13 @@ export class ReadableStream<R = any> {
     throw new RangeError('Invalid mode is specified');
   }
 
+  /**
+   * Provides a convenient, chainable way of piping this readable stream through a transform stream
+   * (or any other `{ writable, readable }` pair). It simply {@link ReadableStream.pipeTo | pipes} the stream
+   * into the writable side of the supplied pair, and returns the readable side for further use.
+   *
+   * Piping a stream will lock it for the duration of the pipe, preventing any other consumer from acquiring a reader.
+   */
   pipeThrough<T>({ writable, readable }: { writable: WritableStream<R>; readable: ReadableStream<T> },
                  { preventClose, preventAbort, preventCancel, signal }: PipeOptions = {}): ReadableStream<T> {
     if (IsReadableStream(this) === false) {
@@ -198,6 +257,13 @@ export class ReadableStream<R = any> {
     return readable;
   }
 
+  /**
+   * Pipes this readable stream to a given writable stream. The way in which the piping process behaves under
+   * various error conditions can be customized with a number of passed options. It returns a promise that fulfills
+   * when the piping process completes successfully, or rejects if any errors were encountered.
+   *
+   * Piping a stream will lock it for the duration of the pipe, preventing any other consumer from acquiring a reader.
+   */
   pipeTo(dest: WritableStream<R>,
          { preventClose, preventAbort, preventCancel, signal }: PipeOptions = {}): Promise<void> {
     if (IsReadableStream(this) === false) {
@@ -229,6 +295,17 @@ export class ReadableStream<R = any> {
     return ReadableStreamPipeTo(this, dest, preventClose, preventAbort, preventCancel, signal);
   }
 
+  /**
+   * Tees this readable stream, returning a two-element array containing the two resulting branches as
+   * new {@link ReadableStream} instances.
+   *
+   * Teeing a stream will lock it, preventing any other consumer from acquiring a reader.
+   * To cancel the stream, cancel both of the resulting branches; a composite cancellation reason will then be
+   * propagated to the stream's underlying source.
+   *
+   * Note that the chunks seen in each branch will be the same object. If the chunks are not immutable,
+   * this could allow interference between the two branches.
+   */
   tee(): [ReadableStream<R>, ReadableStream<R>] {
     if (IsReadableStream(this) === false) {
       throw streamBrandCheckException('tee');
@@ -238,6 +315,11 @@ export class ReadableStream<R = any> {
     return createArrayFromList(branches);
   }
 
+  /**
+   * Returns an async iterator which can be used to consume the stream.
+   *
+   * The return() method of this iterator object will, by default, cancel the stream; it will also release the reader.
+   */
   getIterator({ preventCancel = false }: { preventCancel?: boolean } = {}): ReadableStreamAsyncIterator<R> {
     if (IsReadableStream(this) === false) {
       throw streamBrandCheckException('getIterator');
@@ -245,6 +327,9 @@ export class ReadableStream<R = any> {
     return AcquireReadableStreamAsyncIterator<R>(this, preventCancel);
   }
 
+  /**
+   * Alias of {@link ReadableStream.getIterator}.
+   */
   [Symbol.asyncIterator]: (options?: { preventCancel?: boolean }) => ReadableStreamAsyncIterator<R>;
 }
 
