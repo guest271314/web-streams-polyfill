@@ -3,6 +3,7 @@
  */
 {
   "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+
   /**
    * Optionally specifies another JSON config file that this file extends from.  This provides a way for
    * standard settings to be shared across multiple projects.
@@ -44,6 +45,22 @@
    * SUPPORTED TOKENS: <projectFolder>, <packageName>, <unscopedPackageName>
    */
   "mainEntryPointFilePath": "<projectFolder>/lib/polyfill.d.ts",
+
+  /**
+   * A list of NPM package names whose exports should be treated as part of this package.
+   *
+   * For example, suppose that Webpack is used to generate a distributed bundle for the project "library1",
+   * and another NPM package "library2" is embedded in this bundle.  Some types from library2 may become part
+   * of the exported API for library1, but by default API Extractor would generate a .d.ts rollup that explicitly
+   * imports library2.  To avoid this, we can specify:
+   *
+   *   "bundledPackages": [ "library2" ],
+   *
+   * This would direct API Extractor to embed those types directly in the .d.ts rollup, as if they had been
+   * local files for library1.
+   */
+  "bundledPackages": [ ],
+
   /**
    * Determines how the TypeScript compiler engine will be invoked by API Extractor.
    */
@@ -60,6 +77,7 @@
      * DEFAULT VALUE: "<projectFolder>/tsconfig.json"
      */
     "tsconfigFilePath": "<projectFolder>/tsconfig.json",
+
     /**
      * Provides a compiler configuration that will be used instead of reading the tsconfig.json file from disk.
      * The object must conform to the TypeScript tsconfig schema:
@@ -84,6 +102,7 @@
      */
     // "skipLibCheck": true,
   },
+
   /**
    * Configures how the API report file (*.api.md) will be generated.
    */
@@ -92,6 +111,7 @@
      * (REQUIRED) Whether to generate an API report.
      */
     "enabled": true,
+
     /**
      * The filename for the API report files.  It will be combined with "reportFolder" or "reportTempFolder" to produce
      * a full file path.
@@ -133,6 +153,7 @@
      */
     // "reportTempFolder": "<projectFolder>/temp/"
   },
+
   /**
    * Configures how the doc model file (*.api.json) will be generated.
    */
@@ -141,6 +162,7 @@
      * (REQUIRED) Whether to generate a doc model file.
      */
     "enabled": true,
+
     /**
      * The output path for the doc model file.  The file extension should be ".api.json".
      *
@@ -152,6 +174,7 @@
      */
     // "apiJsonFilePath": "<projectFolder>/temp/<unscopedPackageName>.api.json"
   },
+
   /**
    * Configures how the .d.ts rollup file will be generated.
    */
@@ -160,6 +183,7 @@
      * (REQUIRED) Whether to generate the .d.ts rollup file.
      */
     "enabled": true,
+
     /**
      * Specifies the output path for a .d.ts rollup file to be generated without any trimming.
      * This file will include all declarations that are exported by the main entry point.
@@ -173,6 +197,7 @@
      * DEFAULT VALUE: "<projectFolder>/dist/<unscopedPackageName>.d.ts"
      */
     "untrimmedFilePath": "<projectFolder>/dist/types/polyfill.d.ts",
+
     /**
      * Specifies the output path for a .d.ts rollup file to be generated with trimming for a "beta" release.
      * This file will include only declarations that are marked as "@public" or "@beta".
@@ -209,6 +234,7 @@
      */
     // "omitTrimmingComments": true
   },
+
   /**
    * Configures how the tsdoc-metadata.json file will be generated.
    */
@@ -235,6 +261,16 @@
      */
     // "tsdocMetadataFilePath": "<projectFolder>/dist/tsdoc-metadata.json"
   },
+
+  /**
+   * Specifies what type of newlines API Extractor should use when writing output files.  By default, the output files
+   * will be written with Windows-style newlines.  To use POSIX-style newlines, specify "lf" instead.
+   * To use the OS's default newline kind, specify "os".
+   *
+   * DEFAULT VALUE: "crlf"
+   */
+  // "newlineKind": "crlf",
+
   /**
    * Configures how API Extractor reports error and warning messages produced during analysis.
    *
@@ -267,6 +303,7 @@
          * DEFAULT VALUE: "warning"
          */
         "logLevel": "warning",
+
         /**
          * When addToApiReportFile is true:  If API Extractor is configured to write an API report file (.api.md),
          * then the message will be written inside that file; otherwise, the message is instead logged according to
@@ -276,6 +313,7 @@
          */
         // "addToApiReportFile": false
       },
+
       // "TS2551": {
       //   "logLevel": "warning",
       //   "addToApiReportFile": true
@@ -283,6 +321,7 @@
       //
       // . . .
     },
+
     /**
      * Configures handling of messages reported by API Extractor during its analysis.
      *
@@ -295,6 +334,7 @@
         "logLevel": "warning",
         // "addToApiReportFile": false
       },
+
       // "ae-extra-release-tag": {
       //   "logLevel": "warning",
       //   "addToApiReportFile": true
@@ -302,6 +342,7 @@
       //
       // . . .
     },
+
     /**
      * Configures handling of messages reported by the TSDoc parser when analyzing code comments.
      *
@@ -323,4 +364,5 @@
       // . . .
     }
   }
+
 }
