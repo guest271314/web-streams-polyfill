@@ -19,8 +19,16 @@ import {
 import { IsReadableStreamLocked, ReadableStream, ReadableStreamClose, ReadableStreamError } from '../readable-stream';
 import { UnderlyingSource } from './underlying-source';
 
+/** @public */
 export type ReadableStreamDefaultControllerType<R> = ReadableStreamDefaultController<R>;
 
+/**
+ * The ReadableStreamDefaultController class has methods that allow control of a {@link ReadableStream}'s state
+ * and internal queue. When constructing a {@link ReadableStream} that is not a readable byte stream,
+ * the underlying source is given a corresponding ReadableStreamDefaultController instance to manipulate.
+ *
+ * @public
+ */
 export class ReadableStreamDefaultController<R> {
   /** @internal */
   _controlledReadableStream!: ReadableStream<R>;

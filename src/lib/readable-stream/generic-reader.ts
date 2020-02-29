@@ -2,6 +2,7 @@ import assert from '../../stub/assert';
 import { ReadableStream, ReadableStreamCancel, ReadableStreamReader } from '../readable-stream';
 import { newPromise, setPromiseIsHandledToTrue } from '../helpers';
 
+/** @public */
 export type ReadResult<T> = {
   done: false;
   value: T;

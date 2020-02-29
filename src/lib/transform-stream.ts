@@ -28,14 +28,27 @@ import {
 import { QueuingStrategy, QueuingStrategySizeCallback } from './queuing-strategy';
 import { CreateWritableStream, WritableStream, WritableStreamDefaultControllerErrorIfNeeded } from './writable-stream';
 
+/** @public */
 export type TransformStreamDefaultControllerCallback<O>
   = (controller: TransformStreamDefaultControllerType<O>) => void | PromiseLike<void>;
+/** @public */
 export type TransformStreamDefaultControllerTransformCallback<I, O>
   = (chunk: I, controller: TransformStreamDefaultControllerType<O>) => void | PromiseLike<void>;
 
+/** @public */
 export interface Transformer<I = any, O = any> {
+  /**
+   * A function that is called immediately during creation of the TransformStream.
+   */
   start?: TransformStreamDefaultControllerCallback<O>;
+  /**
+   * A function called when a new chunk originally written to the writable side is ready to be transformed.
+   */
   transform?: TransformStreamDefaultControllerTransformCallback<I, O>;
+  /**
+   * A function called after all chunks written to the writable side have been transformed by successfully passing
+   * through {@link Transformer.transform | transform()}, and the writable side is about to be closed.
+   */
   flush?: TransformStreamDefaultControllerCallback<O>;
   readableType?: undefined;
   writableType?: undefined;
@@ -43,6 +56,14 @@ export interface Transformer<I = any, O = any> {
 
 // Class TransformStream
 
+/**
+ * A transform stream consists of a pair of streams: a {@link WritableStream | writable stream},
+ * known as its writable side, and a {@link ReadableStream | readable stream}, known as its readable side.
+ * In a manner specific to the transform stream in question, writes to the writable side result in new data being
+ * made available for reading from the readable side.
+ *
+ * @public
+ */
 export class TransformStream<I = any, O = any> {
   /** @internal */
   _writable!: WritableStream<I>;
@@ -104,6 +125,9 @@ export class TransformStream<I = any, O = any> {
     startPromise_resolve(startResult);
   }
 
+  /**
+   * The readable side of the transform stream.
+   */
   get readable(): ReadableStream<O> {
     if (IsTransformStream(this) === false) {
       throw streamBrandCheckException('readable');
@@ -112,6 +136,9 @@ export class TransformStream<I = any, O = any> {
     return this._readable;
   }
 
+  /**
+   * The writable side of the transform stream.
+   */
   get writable(): WritableStream<I> {
     if (IsTransformStream(this) === false) {
       throw streamBrandCheckException('writable');
@@ -246,8 +273,10 @@ function TransformStreamSetBackpressure(stream: TransformStream, backpressure: b
 
 // Class TransformStreamDefaultController
 
+/** @public */
 export type TransformStreamDefaultControllerType<O> = TransformStreamDefaultController<O>;
 
+/** @public */
 class TransformStreamDefaultController<O> {
   /** @internal */
   _controlledTransformStream: TransformStream<any, O>;

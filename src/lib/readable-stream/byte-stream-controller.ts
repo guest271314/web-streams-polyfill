@@ -37,8 +37,14 @@ import {
 import { CancelSteps, PullSteps } from './symbols';
 import { UnderlyingByteSource } from './underlying-source';
 
+/** @public */
 export type ReadableStreamBYOBRequestType = ReadableStreamBYOBRequest;
 
+/**
+ * The ReadableStreamBYOBRequest class represents a pull into request in a {@link ReadableByteStreamController}.
+ *
+ * @public
+ */
 export class ReadableStreamBYOBRequest {
   /** @internal */
   _associatedReadableByteStreamController!: ReadableByteStreamController;
@@ -132,8 +138,16 @@ interface BYOBPullIntoDescriptor<T extends ArrayBufferView = ArrayBufferView> {
   readerType: 'byob';
 }
 
+/** @public */
 export type ReadableByteStreamControllerType = ReadableByteStreamController;
 
+/**
+ * The ReadableByteStreamController class has methods that allow control of a {@link ReadableStream}'s state
+ * and internal queue. When constructing a {@link ReadableStream}, the underlying byte source is given a corresponding
+ * ReadableByteStreamController instance to manipulate.
+ *
+ * @public
+ */
 export class ReadableByteStreamController {
   /** @internal */
   _controlledReadableByteStream!: ReadableByteStream;

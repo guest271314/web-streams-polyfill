@@ -17,6 +17,11 @@ import assert from '../../stub/assert';
 import { promiseRejectedWith, promiseResolvedWith, transformPromiseWith, typeIsObject } from '../helpers';
 import { AsyncIteratorPrototype } from '@@target/stub/async-iterator-prototype';
 
+/**
+ * An async iterator returned by {@link ReadableStream.getIterator}.
+ *
+ * @public
+ */
 export interface ReadableStreamAsyncIterator<R> extends AsyncIterator<R> {
   next(): Promise<IteratorResult<R>>;
 
