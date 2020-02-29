@@ -37,14 +37,13 @@ export interface UnderlyingSink<W = any> {
    */
   write?: WritableStreamDefaultControllerWriteCallback<W>;
   /**
-   * A function that is called after the producer signals, via
-   * {@link WritableStreamDefaultWriter.close | writer.close()}, that they are done writing chunks to the stream,
-   * and subsequently all queued-up writes have successfully completed.
+   * A function that is called after the producer signals, via `writer.close()`,
+   * that they are done writing chunks to the stream, and subsequently all queued-up writes have successfully completed.
    */
   close?: WritableStreamDefaultControllerCloseCallback;
   /**
    * A function that is called after the producer signals, via {@link WritableStream.abort | stream.abort()} or
-   * {@link WritableStreamDefaultWriter.abort | writer.abort()}, that they wish to abort the stream.
+   * `writer.abort()`, that they wish to abort the stream.
    * It takes as its argument the same value as was passed to those methods by the producer.
    */
   abort?: WritableStreamErrorCallback;

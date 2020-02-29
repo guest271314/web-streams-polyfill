@@ -188,12 +188,12 @@ export class ReadableStream<R = any> {
    *
    * When `mode` is `undefined`, the method creates a {@link ReadableStreamDefaultReader | default reader}.
    * The reader provides the ability to directly read individual chunks from the stream via the reader's
-   * {@link ReadableStreamDefaultReader.read | read()} method.
+   * `read()` method.
    *
    * When `mode` is `"byob"`, the method creates a {@link ReadableStreamBYOBReader | BYOB reader}.
    * This feature only works on readable byte streams, i.e. streams which were constructed specifically with
    * the ability to handle "bring your own buffer" reading. The reader provides the ability to directly read
-   * individual chunks from the stream via the reader's {@link ReadableStreamBYOBReader.read | read()} method,
+   * individual chunks from the stream via the reader's `read()` method,
    * into developer-supplied buffers, allowing more precise control over allocation.
    */
   getReader({ mode }: { mode: 'byob' }): ReadableStreamBYOBReader;

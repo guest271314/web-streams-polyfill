@@ -25,9 +25,7 @@ export interface UnderlyingSource<R = any> {
   pull?: ReadableStreamDefaultControllerCallback<R>;
   /**
    * A function that is called whenever the consumer cancels the stream, via
-   * {@link ReadableStream.cancel | stream.cancel()},
-   * {@link ReadableStreamDefaultReader.cancel | defaultReader.cancel()}, or
-   * {@link ReadableStreamBYOBReader | byobReader.cancel()}.
+   * `stream.cancel()`, `defaultReader.cancel()`, or `byobReader.cancel()`.
    * It takes as its argument the same value as was passed to those methods by the consumer.
    */
   cancel?: ReadableStreamErrorCallback;
@@ -60,8 +58,7 @@ export interface UnderlyingByteSource {
    * Can be set to a positive integer to cause the implementation to automatically allocate buffers for the
    * underlying source code to write into. In this case, when a consumer is using a default reader, the stream
    * implementation will automatically allocate an ArrayBuffer of the given size, so that
-   * {@link ReadableByteStreamController.byobRequest | controller.byobRequest} is always present,
-   * as if the consumer was using a BYOB reader.
+   * `controller.byobRequest` is always present, as if the consumer was using a BYOB reader.
    */
   autoAllocateChunkSize?: number;
 }
