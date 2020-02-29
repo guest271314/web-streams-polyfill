@@ -1,3 +1,5 @@
+/// <reference lib="es2018.asynciterable" />
+
 import assert from '../stub/assert';
 import {
   createArrayFromList,
