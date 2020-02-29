@@ -76,7 +76,7 @@
      * SUPPORTED TOKENS: <projectFolder>, <packageName>, <unscopedPackageName>
      * DEFAULT VALUE: "<projectFolder>/tsconfig.json"
      */
-    "tsconfigFilePath": "<projectFolder>/tsconfig.json",
+    // "tsconfigFilePath": "<projectFolder>/tsconfig.json",
 
     /**
      * Provides a compiler configuration that will be used instead of reading the tsconfig.json file from disk.
@@ -269,7 +269,7 @@
    *
    * DEFAULT VALUE: "crlf"
    */
-  // "newlineKind": "crlf",
+  "newlineKind": "lf",
 
   /**
    * Configures how API Extractor reports error and warning messages produced during analysis.
