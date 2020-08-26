@@ -572,7 +572,7 @@ function WritableStreamUpdateBackpressure(stream: WritableStream, backpressure: 
  */
 export class WritableStreamDefaultWriter<W = any> {
   /** @internal */
-  _ownerWritableStream: WritableStream<W>;
+  _stream: WritableStream<W>;
   /** @internal */
   _closedPromise!: Promise<void>;
   /** @internal */
@@ -598,7 +598,7 @@ export class WritableStreamDefaultWriter<W = any> {
       throw new TypeError('This stream has already been locked for exclusive writing by another writer');
     }
 
-    this._ownerWritableStream = stream;
+    this._stream = stream;
     stream._writer = this;
 
     const state = stream._state;
@@ -651,7 +651,7 @@ export class WritableStreamDefaultWriter<W = any> {
       throw defaultWriterBrandCheckException('desiredSize');
     }
 
-    if (this._ownerWritableStream === undefined) {
+    if (this._stream === undefined) {
       throw defaultWriterLockException('desiredSize');
     }
 
@@ -682,7 +682,7 @@ export class WritableStreamDefaultWriter<W = any> {
       return promiseRejectedWith(defaultWriterBrandCheckException('abort'));
     }
 
-    if (this._ownerWritableStream === undefined) {
+    if (this._stream === undefined) {
       return promiseRejectedWith(defaultWriterLockException('abort'));
     }
 
@@ -697,7 +697,7 @@ export class WritableStreamDefaultWriter<W = any> {
       return promiseRejectedWith(defaultWriterBrandCheckException('close'));
     }
 
-    const stream = this._ownerWritableStream;
+    const stream = this._stream;
 
     if (stream === undefined) {
       return promiseRejectedWith(defaultWriterLockException('close'));
@@ -725,7 +725,7 @@ export class WritableStreamDefaultWriter<W = any> {
       throw defaultWriterBrandCheckException('releaseLock');
     }
 
-    const stream = this._ownerWritableStream;
+    const stream = this._stream;
 
     if (stream === undefined) {
       return;
@@ -751,7 +751,7 @@ export class WritableStreamDefaultWriter<W = any> {
       return promiseRejectedWith(defaultWriterBrandCheckException('write'));
     }
 
-    if (this._ownerWritableStream === undefined) {
+    if (this._stream === undefined) {
       return promiseRejectedWith(defaultWriterLockException('write to'));
     }
 
@@ -782,7 +782,7 @@ function IsWritableStreamDefaultWriter<W = any>(x: any): x is WritableStreamDefa
     return false;
   }
 
-  if (!Object.prototype.hasOwnProperty.call(x, '_ownerWritableStream')) {
+  if (!Object.prototype.hasOwnProperty.call(x, '_stream')) {
     return false;
   }
 
@@ -792,7 +792,7 @@ function IsWritableStreamDefaultWriter<W = any>(x: any): x is WritableStreamDefa
 // A client of WritableStreamDefaultWriter may use these functions directly to bypass state check.
 
 function WritableStreamDefaultWriterAbort(writer: WritableStreamDefaultWriter, reason: any) {
-  const stream = writer._ownerWritableStream;
+  const stream = writer._stream;
 
   assert(stream !== undefined);
 
@@ -800,7 +800,7 @@ function WritableStreamDefaultWriterAbort(writer: WritableStreamDefaultWriter, r
 }
 
 function WritableStreamDefaultWriterClose(writer: WritableStreamDefaultWriter): Promise<void> {
-  const stream = writer._ownerWritableStream;
+  const stream = writer._stream;
 
   assert(stream !== undefined);
 
@@ -808,7 +808,7 @@ function WritableStreamDefaultWriterClose(writer: WritableStreamDefaultWriter): 
 }
 
 function WritableStreamDefaultWriterCloseWithErrorPropagation(writer: WritableStreamDefaultWriter): Promise<void> {
-  const stream = writer._ownerWritableStream;
+  const stream = writer._stream;
 
   assert(stream !== undefined);
 
@@ -843,7 +843,7 @@ function WritableStreamDefaultWriterEnsureReadyPromiseRejected(writer: WritableS
 }
 
 function WritableStreamDefaultWriterGetDesiredSize(writer: WritableStreamDefaultWriter): number | null {
-  const stream = writer._ownerWritableStream;
+  const stream = writer._stream;
   const state = stream._state;
 
   if (state === 'errored' || state === 'erroring') {
@@ -858,7 +858,7 @@ function WritableStreamDefaultWriterGetDesiredSize(writer: WritableStreamDefault
 }
 
 function WritableStreamDefaultWriterRelease(writer: WritableStreamDefaultWriter) {
-  const stream = writer._ownerWritableStream;
+  const stream = writer._stream;
   assert(stream !== undefined);
   assert(stream._writer === writer);
 
@@ -872,11 +872,11 @@ function WritableStreamDefaultWriterRelease(writer: WritableStreamDefaultWriter)
   WritableStreamDefaultWriterEnsureClosedPromiseRejected(writer, releasedError);
 
   stream._writer = undefined;
-  writer._ownerWritableStream = undefined!;
+  writer._stream = undefined!;
 }
 
 function WritableStreamDefaultWriterWrite<W>(writer: WritableStreamDefaultWriter<W>, chunk: W): Promise<void> {
-  const stream = writer._ownerWritableStream;
+  const stream = writer._stream;
 
   assert(stream !== undefined);
 
@@ -884,7 +884,7 @@ function WritableStreamDefaultWriterWrite<W>(writer: WritableStreamDefaultWriter
 
   const chunkSize = WritableStreamDefaultControllerGetChunkSize(controller, chunk);
 
-  if (stream !== writer._ownerWritableStream) {
+  if (stream !== writer._stream) {
     return promiseRejectedWith(defaultWriterLockException('write to'));
   }
 
