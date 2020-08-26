@@ -90,7 +90,7 @@ export interface ReadRequest<R> {
  */
 export class ReadableStreamDefaultReader<R = any> {
   /** @internal */
-  _ownerReadableStream!: ReadableStream<R>;
+  _stream!: ReadableStream<R>;
   /** @internal */
   _closedPromise!: Promise<void>;
   /** @internal */
@@ -133,7 +133,7 @@ export class ReadableStreamDefaultReader<R = any> {
       return promiseRejectedWith(defaultReaderBrandCheckException('cancel'));
     }
 
-    if (this._ownerReadableStream === undefined) {
+    if (this._stream === undefined) {
       return promiseRejectedWith(readerLockException('cancel'));
     }
 
@@ -150,7 +150,7 @@ export class ReadableStreamDefaultReader<R = any> {
       return promiseRejectedWith(defaultReaderBrandCheckException('read'));
     }
 
-    if (this._ownerReadableStream === undefined) {
+    if (this._stream === undefined) {
       return promiseRejectedWith(readerLockException('read from'));
     }
 
@@ -183,7 +183,7 @@ export class ReadableStreamDefaultReader<R = any> {
       throw defaultReaderBrandCheckException('releaseLock');
     }
 
-    if (this._ownerReadableStream === undefined) {
+    if (this._stream === undefined) {
       return;
     }
 
@@ -224,7 +224,7 @@ export function IsReadableStreamDefaultReader<R = any>(x: any): x is ReadableStr
 
 export function ReadableStreamDefaultReaderRead<R>(reader: ReadableStreamDefaultReader<R>,
                                                    readRequest: ReadRequest<R>): void {
-  const stream = reader._ownerReadableStream;
+  const stream = reader._stream;
 
   assert(stream !== undefined);
 

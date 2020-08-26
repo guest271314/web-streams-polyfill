@@ -67,7 +67,7 @@ export class ReadableStreamAsyncIteratorImpl<R> {
     }
 
     const reader = this._reader;
-    if (reader._ownerReadableStream === undefined) {
+    if (reader._stream === undefined) {
       return promiseRejectedWith(readerLockException('iterate'));
     }
 
@@ -108,7 +108,7 @@ export class ReadableStreamAsyncIteratorImpl<R> {
     this._isFinished = true;
 
     const reader = this._reader;
-    if (reader._ownerReadableStream === undefined) {
+    if (reader._stream === undefined) {
       return promiseRejectedWith(readerLockException('finish iterating'));
     }
 

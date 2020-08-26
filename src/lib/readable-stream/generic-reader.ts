@@ -3,7 +3,7 @@ import { ReadableStream, ReadableStreamCancel, ReadableStreamReader } from '../r
 import { newPromise, setPromiseIsHandledToTrue } from '../helpers/webidl';
 
 export function ReadableStreamReaderGenericInitialize<R>(reader: ReadableStreamReader<R>, stream: ReadableStream<R>) {
-  reader._ownerReadableStream = stream;
+  reader._stream = stream;
   stream._reader = reader;
 
   if (stream._state === 'readable') {
@@ -21,16 +21,16 @@ export function ReadableStreamReaderGenericInitialize<R>(reader: ReadableStreamR
 // check.
 
 export function ReadableStreamReaderGenericCancel(reader: ReadableStreamReader<any>, reason: any): Promise<void> {
-  const stream = reader._ownerReadableStream;
+  const stream = reader._stream;
   assert(stream !== undefined);
   return ReadableStreamCancel(stream, reason);
 }
 
 export function ReadableStreamReaderGenericRelease(reader: ReadableStreamReader<any>) {
-  assert(reader._ownerReadableStream !== undefined);
-  assert(reader._ownerReadableStream._reader === reader);
+  assert(reader._stream !== undefined);
+  assert(reader._stream._reader === reader);
 
-  if (reader._ownerReadableStream._state === 'readable') {
+  if (reader._stream._state === 'readable') {
     defaultReaderClosedPromiseReject(
       reader,
       new TypeError(`Reader was released and can no longer be used to monitor the stream's closedness`));
@@ -40,8 +40,8 @@ export function ReadableStreamReaderGenericRelease(reader: ReadableStreamReader<
       new TypeError(`Reader was released and can no longer be used to monitor the stream's closedness`));
   }
 
-  reader._ownerReadableStream._reader = undefined;
-  reader._ownerReadableStream = undefined!;
+  reader._stream._reader = undefined;
+  reader._stream = undefined!;
 }
 
 // Helper functions for the readers.

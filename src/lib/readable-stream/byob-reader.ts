@@ -93,7 +93,7 @@ export interface ReadIntoRequest<T extends ArrayBufferView> {
  */
 export class ReadableStreamBYOBReader {
   /** @internal */
-  _ownerReadableStream!: ReadableByteStream;
+  _stream!: ReadableByteStream;
   /** @internal */
   _closedPromise!: Promise<void>;
   /** @internal */
@@ -141,7 +141,7 @@ export class ReadableStreamBYOBReader {
       return promiseRejectedWith(byobReaderBrandCheckException('cancel'));
     }
 
-    if (this._ownerReadableStream === undefined) {
+    if (this._stream === undefined) {
       return promiseRejectedWith(readerLockException('cancel'));
     }
 
@@ -168,7 +168,7 @@ export class ReadableStreamBYOBReader {
       return promiseRejectedWith(new TypeError(`view's buffer must have non-zero byteLength`));
     }
 
-    if (this._ownerReadableStream === undefined) {
+    if (this._stream === undefined) {
       return promiseRejectedWith(readerLockException('read from'));
     }
 
@@ -201,7 +201,7 @@ export class ReadableStreamBYOBReader {
       throw byobReaderBrandCheckException('releaseLock');
     }
 
-    if (this._ownerReadableStream === undefined) {
+    if (this._stream === undefined) {
       return;
     }
 
@@ -243,7 +243,7 @@ export function IsReadableStreamBYOBReader(x: any): x is ReadableStreamBYOBReade
 function ReadableStreamBYOBReaderRead<T extends ArrayBufferView>(reader: ReadableStreamBYOBReader,
                                                                  view: T,
                                                                  readIntoRequest: ReadIntoRequest<T>): void {
-  const stream = reader._ownerReadableStream;
+  const stream = reader._stream;
 
   assert(stream !== undefined);
 
